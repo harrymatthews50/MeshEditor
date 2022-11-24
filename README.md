@@ -5,7 +5,13 @@ Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033
 ## Dependencies
 - Python 3.10
 - pyvista 0.37 and its dependencies
-- joblib 1.2 and its dependenciew
+- joblib 1.2 and its dependencies
+## Installation
+After installing the dependencies the MeshEditor module can be imported within a script after calls to
+```
+import sys
+sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor repo on your computer
+```
 ## Overview
 ### Mesh editor module
 The MeshEditor module implements two classes:
@@ -58,6 +64,36 @@ Two methods of the Batch Mesheditor need to be run in sequence 'prepareFiles' (f
 2. You edit or landmark the scan as needed
 3. You press return to save the results. The background of the editor will go black if the file has been saved.
 4. Close the editor and the next file will open.
+# MIC-specific instructions
+This was deveoped as an in house tool for the Medical Image Computing group of KU Leuven. The following instructions are relevant only to MIC personnel working on our data servers.
+
+## Working in PyCharm with conda
+The relevant conda environment (MeshEditing) is installed on micbb01 at the time of writing. The simplest way is to run the (e.g demo) scripts is to 
+1. Modify the scripts to process the meshes that you want to process (pay attention to the call to sys.path.append - see 'installation' above)
+2. In the terminal run:
+```
+conda activate MeshEditing
+python 'scriptName.py' # chnage to the full or relative path to the script you are trying to run
+```
+Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
+1. Start pycharm by typing in ther terminal
+ ``` 
+ conda activate MeshEditing
+ pycharm
+ ```
+ in the terminal. You may need to activate a licence for yourself by making a free JetBrains account.
+2. File>NewProject
+    - Set the 'location' to where you want to keep your scripts
+    - Check the 'PythonInterpreter' is 'Python 3.10 (MeshEditing)' # or whatever you are expecting it to be :p
+    - Uncheck 'Create a main.py welcome script'
+    - Click Create
+ 
+ Within this open project you can open (File>Open), edit and run scripts using the configured python interpreter.
+ For anybody missing MATLAB's 'cell mode' ... there is a plugin for that: 
+ 1. File>Settings>Plugins 
+ 2. Search for 'pycharm cell mode' and install
+You can then make 'cells' in python scripts between double '##' You may need to restart pycharm
+Having created this project you can open it again at any point (File>Open) and run and edit scripts according to the required Python interpreter. 
 
 
 
