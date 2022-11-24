@@ -23,7 +23,7 @@ Check the demos folder for:
 - demo_MesheditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
 - demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
 ## Using the Mesh Editor
-There are demos opf this in the dmeo folder. The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
+There are demos of this in the demo folder. The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
     - in interaction mode mouse click modify the camera prespective
@@ -64,8 +64,8 @@ Two methods of the Batch Mesheditor need to be run in sequence 'prepareFiles' (f
 2. You edit or landmark the scan as needed
 3. You press return to save the results. The background of the editor will go black if the file has been saved.
 4. Close the editor and the next file will open.
-# MIC-specific instructions
-This was deveoped as an in house tool for the Medical Image Computing group of KU Leuven. The following instructions are relevant only to MIC personnel working on our data servers.
+# MIRC-specific instructions
+This was deveoped as an in house tool for the Laboratory of Imaging Genetics at KU Leuven. The following instructions are mostly relevant to those working on the MIRC infrastructure. 
 
 ## Working in PyCharm with conda
 The relevant conda environment (MeshEditing) is installed on micbb01 at the time of writing. The simplest way is to run the (e.g demo) scripts is to 
