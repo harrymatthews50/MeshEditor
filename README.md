@@ -73,7 +73,7 @@ The relevant conda environment (MeshEditing) is installed on micbb01 at the time
 2. In the terminal run:
 ```
 conda activate MeshEditing
-python 'scriptName.py' # chnage to the full or relative path to the script you are trying to run
+python 'scriptName.py' # change to the full or relative path to the script you are trying to run
 ```
 Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
 1. Start pycharm by typing in ther terminal
@@ -81,7 +81,7 @@ Those who are more used to MATLAB might prefer work in an interactive IDE. With 
  conda activate MeshEditing
  pycharm
  ```
- in the terminal. You may need to activate a licence for yourself by making a free JetBrains account.
+
 2. File>NewProject
     - Set the 'location' to where you want to keep your scripts
     - Check the 'PythonInterpreter' is 'Python 3.10 (MeshEditing)' # or whatever you are expecting it to be :p
