@@ -12,22 +12,22 @@ import sys
 sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor repo on your computer
 ```
 ## Overview
-### Mesh editor module
+### MeshEditor module
 The MeshEditor module implements two classes:
 - MeshEditor enables vertex selection, deletion and basic landmarking as well as saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
 - BatchMeshEditor enables batch processing of multiple files loading files from a source directory and outputting them into a destination directory.
 ### Demos
 Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the Mesheditor in 'edit' (see below for explanation of the controls)
-- demo_MesheditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
+- demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
 - demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
 To run them make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
-    - in interaction mode mouse click modify the camera prespective
-    - in selection mode brushimng and vertex selection is controlled by mouse clicks
+    - In interaction mode mouse clicking and tracking modify the camera prespective
+    - In selection mode brushimng and vertex selection is controlled by mouse clicks
 - Select or deselect vertices using the brush
     - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visulaly by a chnage in the background color)
     - Right clicking makes the brush deselect vertices
@@ -38,12 +38,12 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - 'f' deletes the inverse of the selection
 - 'Enter/Return exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
 #### Experimental (buggy) features
-- the capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. I am hoping for a solution (https://stackoverflow.com/questions/74558545/enabling-disabling-renderer-multiple-times-changes-appearance-of-second-actor-in). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
-- double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
-- if you try to brush too fast the viewer can crash because it cannot keeep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
+- The capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. I am hoping for a solution (https://stackoverflow.com/questions/74558545/enabling-disabling-renderer-multiple-times-changes-appearance-of-second-actor-in). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
+- Double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
+- If you try to brush too fast the viewer can crash because it cannot keeep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
 ### MeshEditor controls - 'landmark' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
-    - in interaction mode mouse click modify the camera prespective
+    - in interaction mode mouse click ing and tracking modify the camera prespective
     - in selection mode left clicking puts a landmark in the position of the click
 - Left clicking puts a landmark in the location
 - 'Delete' removes the landmark that was placed last
