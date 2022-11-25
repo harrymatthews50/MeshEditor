@@ -389,7 +389,7 @@ class BatchMeshEditor:
 
     @SourcePath.setter
     def SourcePath(self, value):
-        if os.path.isdir(value):
+        if os.path.isdir(value) | (value is None):
             self._SourcePath = value
         else:
             raise ValueError('path does not exist or is not a directory')
@@ -408,10 +408,13 @@ class BatchMeshEditor:
 
     @DestinationPath.setter
     def DestinationPath(self, value):
-        if os.path.isdir(value):
+        if  isinstance(value,(str,None)):
             self._DestinationPath = value
         else:
-            raise ValueError('path does not exist or is not a directory')
+            raise ValueError('Destination path must be string or NoneType')
+        if isinstance(value,str) & os.path.isdir(value)==False:
+            os.makedirs(value)
+            print('Destination path does not exist so it is being made')
 
     # properties with setters
     @property
@@ -474,7 +477,7 @@ class BatchMeshEditor:
             # bullet proof against ever saving an infile with the wrong corresponding outfile name
             if self._InFiles[i]['fileName'] != self._OutFiles[i]['fileName']:
                 raise ValueError('Input and output filenames don\'t match. This requires investigation')
-            currF = self._inFiles[i]
+            currF = self._InFiles[i]
 
             if self.PreLoadObjs == False: # load the polydata into the file dictionary
                 load3DImage(currF)
