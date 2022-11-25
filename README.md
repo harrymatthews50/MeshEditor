@@ -20,8 +20,9 @@ The MeshEditor module implements two classes:
 Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the MeshEditor in 'edit' mode (see below for explanation of the controls)
 - demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
-- demo_BatchMeshEditor.py which runs the BatchMeshEditor to process multiple scans in sequence
-To run them make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
+- demo_BatchMeshEditor.py which runs the BatchMeshEditor to process multiple scans in sequence.
+
+To run the demos make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
@@ -29,7 +30,7 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - In interaction mode mouse clicking and tracking modify the camera prespective
     - In selection mode brushing and vertex selection is controlled by mouse clicks
 - Select or deselect vertices using the brush
-    - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a chnage in the background color)
+    - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a change in the background color)
     - Right clicking makes the brush deselect vertices
     - Left clicking makes the brush select vertices
     - Pressing keys '1' and '2' decrease and increase the radius of the brush respectively
@@ -38,7 +39,7 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - 'f' deletes the inverse of the selection
 - 'Enter/Return exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
 #### Experimental (buggy) features
-- The capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. You may not be able to see the brush after re-enabling camera interaction. I am hoping for a solution (https://github.com/pyvista/pyvista/issues/3647). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
+- The capacity to view the brush as a highlighted region on the surface that tracks with  the cursor position is enabled. This is buggy when toggling between selection and interaction mode. You may not be able to see the brush after re-enabling camera interaction. I am hoping for a solution (https://github.com/pyvista/pyvista/issues/3647). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
 - Double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
 - If you try to brush too fast the viewer can crash because it cannot keep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
 ### MeshEditor controls - 'landmark' mode
@@ -73,7 +74,7 @@ The relevant conda environment (MeshEditing) is installed on micbb01 at the time
 2. In the terminal run:
 ```
 conda activate MeshEditing
-python 'scriptName.py' # change to the full or relative path to the script you are trying to run
+python scriptName.py # change to the full or relative path to the script you are trying to run
 ```
 Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
 1. Start pycharm by typing in ther terminal
