@@ -18,7 +18,7 @@ The MeshEditor module implements two classes:
 - BatchMeshEditor enables batch processing of multiple files loading files from a source directory and outputting them into a destination directory.
 ### Demos
 Check the demos folder for:
-- demo_MeshEditorEditMode.py which runs the Mesheditor in 'edit' (see below for explanation of the controls)
+- demo_MeshEditorEditMode.py which runs the MeshEditor in 'edit' mode (see below for explanation of the controls)
 - demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
 - demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
 To run them make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
@@ -27,12 +27,12 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 ### MeshEditor controls - 'edit' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
     - In interaction mode mouse clicking and tracking modify the camera prespective
-    - In selection mode brushimng and vertex selection is controlled by mouse clicks
+    - In selection mode brushing and vertex selection is controlled by mouse clicks
 - Select or deselect vertices using the brush
-    - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visulaly by a chnage in the background color)
+    - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a chnage in the background color)
     - Right clicking makes the brush deselect vertices
     - Left clicking makes the brush select vertices
-    - 1 and 2 decrease/increase the radius of the brush
+    - Pressing keys '1' and '2' decrease and increase the radius of the brush respectively
 - Pressing 'i' inverts the selection
 - 'Delete' deletes the selection
 - 'f' deletes the inverse of the selection
@@ -92,7 +92,7 @@ Those who are more used to MATLAB might prefer work in an interactive IDE. With 
  For anybody missing MATLAB's 'cell mode' ... there is a plugin for that: 
  1. File>Settings>Plugins 
  2. Search for 'pycharm cell mode' and install
-You can then make 'cells' in python scripts between double '##' You may need to restart pycharm
+You can then make 'cells' in python scripts between double '##'
 Having created this project you can open it again at any point (File>Open) and run and edit scripts according to the required Python interpreter. 
 ## Integration with MATLAB BatchMapper
 -   If you are also working with the inhouse BatchMapper tool in MATLAB. Do not run the cleaning and pose landmarking methods of the BatchMapper (as these are replaced by this tool)
