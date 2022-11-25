@@ -38,12 +38,12 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - 'f' deletes the inverse of the selection
 - 'Enter/Return exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
 #### Experimental (buggy) features
-- The capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. You may tob be able to see the brush after re-enabling camera interaction. I am hoping for a solution (https://github.com/pyvista/pyvista/issues/3647). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
+- The capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. You may not be able to see the brush after re-enabling camera interaction. I am hoping for a solution (https://github.com/pyvista/pyvista/issues/3647). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
 - Double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
-- If you try to brush too fast the viewer can crash because it cannot keeep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
+- If you try to brush too fast the viewer can crash because it cannot keep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
 ### MeshEditor controls - 'landmark' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
-    - in interaction mode mouse click ing and tracking modify the camera prespective
+    - in interaction mode mouse clicking and tracking modify the camera prespective
     - in selection mode left clicking puts a landmark in the position of the click
 - Left clicking puts a landmark in the location
 - 'Delete' removes the landmark that was placed last
