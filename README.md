@@ -20,7 +20,7 @@ The MeshEditor module implements two classes:
 Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the MeshEditor in 'edit' mode (see below for explanation of the controls)
 - demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
-- demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
+- demo_BatchMeshEditor.py which runs the BatchMeshEditor to process multiple scans in sequence
 To run them make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
