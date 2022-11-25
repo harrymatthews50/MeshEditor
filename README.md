@@ -21,6 +21,7 @@ Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the Mesheditor in 'edit' (see below for explanation of the controls)
 - demo_MesheditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
 - demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
+To run them make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
@@ -93,6 +94,10 @@ Those who are more used to MATLAB might prefer work in an interactive IDE. With 
  2. Search for 'pycharm cell mode' and install
 You can then make 'cells' in python scripts between double '##' You may need to restart pycharm
 Having created this project you can open it again at any point (File>Open) and run and edit scripts according to the required Python interpreter. 
+## Integration with MATLAB BatchMapper
+-   If you are also working with the inhouse BatchMapper tool in MATLAB. Do not run the cleaning and pose landmarking methods of the BatchMapper (as these are replaced by this tool)
+- When using the BatchMeshEditor you can set the 'HomeDirectory' to the corresponding HomeDirectory of the BatchMapper. This will set the source and destination paths of the BatchMeshEditor correctly to write into the paths expected by the BatchMapper for running the registration
+- Prior to running 'step4MapShape' with the BatchMapper set its 'PoseAndCleanSoftware' attribute to 'PythonMeshEditor'. This will make sure it looks for '.obj' and '.txt' landmark files and these in the correct directories.
 
 
 
