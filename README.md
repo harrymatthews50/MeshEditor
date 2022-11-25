@@ -5,7 +5,6 @@ Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033
 ## Dependencies
 - Python 3.10
 - pyvista 0.37 and its dependencies
-- joblib 1.2 and its dependencies
 ## Installation
 After installing the dependencies the MeshEditor module can be imported within a script after calls to
 ```
@@ -15,7 +14,7 @@ sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor
 ## Overview
 ### Mesh editor module
 The MeshEditor module implements two classes:
-- MeshEditor enables vertex selection, deletion and basic landmarking as well as saving the resulting mesh and landmark coordinates. This was done simply by ading a bunch of callbacks to keyboard and mouse events to a pyvista Plotter
+- MeshEditor enables vertex selection, deletion and basic landmarking as well as saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
 - BatchMeshEditor enables batch processing of multiple files loading files from a source directory and outputting them into a destination directory.
 ### Demos
 Check the demos folder for:
@@ -23,7 +22,7 @@ Check the demos folder for:
 - demo_MesheditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
 - demo_BatchMesheditor.py which runs the BatchMeshEditor to process multiple scans in sequence
 ## Using the Mesh Editor
-There are demos of this in the demo folder. The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
+The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
     - in interaction mode mouse click modify the camera prespective
@@ -40,7 +39,7 @@ There are demos of this in the demo folder. The different modes are 'edit' and '
 #### Experimental (buggy) features
 - the capacity to view the brush as a highlighted region on the surface that tracks with changes to the cursor position is enabled. This is buggy when toggling between selection and interaction mode. I am hoping for a solution (https://stackoverflow.com/questions/74558545/enabling-disabling-renderer-multiple-times-changes-appearance-of-second-actor-in). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
 - double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
-- if you try to brush too fast the viewer can crash because it cannot keeep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. 
+- if you try to brush too fast the viewer can crash because it cannot keeep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
 ### MeshEditor controls - 'landmark' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 's'
     - in interaction mode mouse click modify the camera prespective
