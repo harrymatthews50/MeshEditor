@@ -2,13 +2,13 @@
 import pyvista as pv
 import sys
 # add path to MeshEditor.py
-sys.path.append('/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/')
+sys.path.append('/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/MeshEditor')
 from MeshEditor import BatchMeshEditor
 ##
 # where are the meshes you want to proces
-srcPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/demos/DemoData/DemoMeshSource'
+srcPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/MeshEditor/demos/DemoData/DemoMeshSource'
 # landmarking demo
-dstPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/demos/DemoData/DemoLandmarkDestination'
+dstPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/MeshEditor/demos/DemoData/DemoLandmarkDestination'
 BME = BatchMeshEditor()
 BME.SourcePath = srcPath
 BME.DestinationPath = dstPath
@@ -22,7 +22,7 @@ BME.prepareFiles() # find files to process
 BME.processFiles()
 
 # batch clean files
-dstPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/demos/DemoData/DemoMeshDestination'
+dstPath = '/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/MeshEditor/demos/DemoData/DemoMeshDestination'
 BME = BatchMeshEditor()
 BME.SourcePath = srcPath
 BME.DestinationPath = dstPath
