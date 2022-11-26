@@ -48,7 +48,7 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - in selection mode left clicking puts a landmark in the position of the click
 - Left clicking puts a landmark in the location
 - 'Delete' removes the landmark that was placed last
-- 'Return/Enter' exports the landmarks in the order they were specified to a comma delimeted text file if  (if saveFileName='filename' was specified in the call to the constructor)
+- 'Return/Enter' exports the landmarks in the order they were specified to a comma delimited text file if  (if saveFileName='filename' was specified in the call to the constructor)
 ## Using the BatchMeshEditor
 Various attributes of the BatchMeshEditor object need to be set inside of the script:
 - 'SourcePath' the path where the meshes are. All subfolders of this path will be searched
