@@ -1,7 +1,7 @@
-# Mesh Editor
-A tool for editing and landmarking meshes written using pyvista.
+# MeshEditor
+A tool for editing and landmarking 3D meshes, written using pyvista.
 ## Note
-Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033) that stops closing of pyvista plotters this will not work on mac. It has been tested on Linux 
+Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033) that stops closing of pyvista plotters, this will not work on Mac. It has been tested on Linux 
 ## Dependencies
 - Python 3.10
 - pyvista 0.37 and its dependencies
@@ -14,12 +14,12 @@ sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor
 ## Overview
 ### MeshEditor module
 The MeshEditor module implements two classes:
-- MeshEditor enables vertex selection, deletion and basic landmarking as well as saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
-- BatchMeshEditor enables batch processing of multiple files loading files from a source directory and outputting them into a destination directory.
+- MeshEditor enables vertex selection, deletion and basic landmarking of a 3D mesh. It allows saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
+- BatchMeshEditor enables batch processing of multiple files. Handkes loading files from a source directory and outputting them into a destination directory after editing or landmarking.
 ### Demos
 Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the MeshEditor in 'edit' mode (see below for explanation of the controls)
-- demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark mode' (see below for explanation of the controls)
+- demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark' mode (see below for explanation of the controls)
 - demo_BatchMeshEditor.py which runs the BatchMeshEditor to process multiple scans in sequence.
 
 To run the demos make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
