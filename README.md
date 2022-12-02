@@ -26,7 +26,7 @@ To run the demos make sure you modify the call to sys.path.append at the beginni
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
-- Toggle between 'selection' and 'interaction' modes' by pressing 's'
+- Toggle between 'selection' and 'interaction' modes' by pressing 't'
     - In interaction mode mouse clicking and tracking modify the camera prespective
     - In selection mode brushing and vertex selection is controlled by mouse clicks
 - Select or deselect vertices using the brush
@@ -37,39 +37,41 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - Pressing 'i' inverts the selection
 - 'Delete' deletes the selection
 - 'f' deletes the inverse of the selection
-- 'Enter/Return exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
+- 'a' exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
+- 'q' closes the plotter
 #### Experimental (buggy) features
-- The capacity to view the brush as a highlighted region on the surface that tracks with  the cursor position is enabled. This is buggy when toggling between selection and interaction mode. You may not be able to see the brush after re-enabling camera interaction. I am hoping for a solution (https://github.com/pyvista/pyvista/issues/3647). This can also slow things down for dense meshes and can be disabled by setting showSelectionPreview=False in the call to the MeshEditor constructor.
 - Double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
-- If you try to brush too fast the viewer can crash because it cannot keep up with tracking the mouse (I assume). Just brush at a sensible speed and everything should be fine. You may also get a recursion error triggered while brushing fast. It doesn't interfere with the actual brushing.
+- In both 'landmark' and 'editor' mode the program can simply crash with a C++ error. This does not seem to occur in a principled way. 
 ### MeshEditor controls - 'landmark' mode
-- Toggle between 'selection' and 'interaction' modes' by pressing 's'
+- Toggle between 'selection' and 'interaction' modes' by pressing 't'
     - in interaction mode mouse clicking and tracking modify the camera prespective
     - in selection mode left clicking puts a landmark in the position of the click
 - Left clicking puts a landmark in the location
 - 'Delete' removes the landmark that was placed last
-- 'Return/Enter' exports the landmarks in the order they were specified to a comma delimited text file if  (if saveFileName='filename' was specified in the call to the constructor)
+- 'a' exports the landmarks in the order they were specified to a comma delimited text file if  (if saveFileName='filename' was specified in the call to the constructor)
 ## Using the BatchMeshEditor
 Various attributes of the BatchMeshEditor object need to be set inside of the script:
 - 'SourcePath' the path where the meshes are. All subfolders of this path will be searched
 - 'DestinationPath' the path where the output is to be placed
 - 'InputFileType' file extension with leading '.' (e.g. '.obj') of the file type in the SourcePath. This can be any type supported by pyvista.read https://docs.pyvista.org/api/utilities/_autosummary/pyvista.read.html
 - 'PreserveSubFolders' if True then the subfolder structure of SourcePath and DestinationPath will be preserved. Otherwise all files found in the SourcePath will be written to the first level of the DestinationPath
-- 'Overwrite' if False only the files in the SourcePath without a match in the DestinationPath will be processed
-- 'PreLoadObjs' if True all files will be loaded prior to processing, otheriwse they will be loaded on the fly
+- 'Overwrite' if False only the files in the SourcePath without a match in the DestinationPath will be processed - this is recommended since, if the program crashes you can simply restart where you left off
+- 'PreLoadObjs' if True all files will be loaded prior to processing, otherwise they will be loaded on the fly - this is not recommended since preloading takes a long time and the program will sometimes crash mid way through you do not want to have to run the preloading again every time
 - 'Mode'corresponds to 'mode' of the MeshEditor and controls whetehr to landmark or edit the scans
-- 'ShowSelectionPreview' corresponds to the 'showSelectionPreview' setting of the MeshEditor
+- 'Convert to vtk' if true this will make a copy of each input file in the cource directory saved in 'vtk' format for faster loading. This overides 'InputFileType' ... during processing the '.vtk' files will be loaded. 
 
 Two methods of the Batch Mesheditor need to be run in sequence 'prepareFiles' (finds the files and preloads them if necessary) 'processFiles' strats the process of iterating through the files. For each file:
 1. The MeshEditor will open
 2. You edit or landmark the scan as needed
-3. You press return to save the results. The background of the editor will go black if the file has been saved.
-4. Close the editor and the next file will open.
+3. You press 'a' to save the results. The background of the editor will go black if the file has been saved.
+4. Close the editor by pressing 'q' and the next file will open.
 # MIRC-specific instructions
 This was deveoped as an in house tool for the Laboratory of Imaging Genetics at KU Leuven. The following instructions are mostly relevant to those working on the MIRC infrastructure. 
 
 ## Working in PyCharm with conda
-The relevant conda environment (MeshEditing) is installed on micbb01 at the time of writing. The simplest way is to run the (e.g demo) scripts is to 
+The relevant conda environment (MeshEditingMicsd01) is installed on micsd01 at the time of writing. Or you can create your own with the required dependencies. Contact Dominique or the MIRC Wiki for up-to-date instructions for how to ccreate your own conda environmnet.
+
+The simplest way to run the (e.g demo) scripts is to 
 1. Modify the scripts to process the meshes that you want to process (pay attention to the call to sys.path.append - see 'installation' above)
 2. In the terminal run:
 ```
@@ -79,7 +81,7 @@ python scriptName.py # change to the full or relative path to the script you are
 Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
 1. Start pycharm by typing in ther terminal
  ``` 
- conda activate MeshEditing
+ conda activate MeshEditingMicsd01
  pycharm
  ```
 
