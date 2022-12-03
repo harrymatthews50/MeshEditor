@@ -80,7 +80,7 @@ The simplest way to run the (e.g demo) scripts is to
 1. Modify the scripts to process the meshes that you want to process (pay attention to the call to sys.path.append - see 'installation' above)
 2. In the terminal run:
 ```
-conda activate MeshEditing
+conda activate MeshEditingMicsd01
 python scriptName.py # change to the full or relative path to the script you are trying to run
 ```
 Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
