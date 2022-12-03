@@ -5,6 +5,7 @@ Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033
 ## Dependencies
 - Python 3.10
 - pyvista 0.37 and its dependencies
+- scipy 1.9.3
 ## Installation
 After installing the dependencies the MeshEditor module can be imported within a script after calls to
 ```
@@ -37,11 +38,11 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - Pressing 'i' inverts the selection
 - 'Delete' deletes the selection
 - 'f' deletes the inverse of the selection
+- 'z' is an 'Undo' function. It will reverse the last deletion that was done. It can be pressed multiple tiomes to undo a series of deletions.
 - 'a' exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
 - 'q' closes the plotter
 #### Experimental (buggy) features
-- Double left click tries a 'paint bucket' selection of all vertices connected to the one that is clicked. This doesn't really work as expected. The issue seems to be that the connectivity method of pyvista.PolyData (on which this depends) does not label the connected components correctly. This might be fixed in future.
-- In both 'landmark' and 'editor' mode the program can simply crash with a C++ error. This does not seem to occur in a principled way. 
+- In both 'landmark' and 'edit' mode the program can simply crash with a C++ error. This does not seem to occur in a patterned way. 
 ### MeshEditor controls - 'landmark' mode
 - Toggle between 'selection' and 'interaction' modes' by pressing 't'
     - in interaction mode mouse clicking and tracking modify the camera prespective
@@ -65,11 +66,15 @@ Two methods of the Batch Mesheditor need to be run in sequence 'prepareFiles' (f
 2. You edit or landmark the scan as needed
 3. You press 'a' to save the results. The background of the editor will go black if the file has been saved.
 4. Close the editor by pressing 'q' and the next file will open.
+
+### Note
+If there are multiple files with tthe same filename in the source path (e.g. in different sub folders) only one will be processed. This is regardless of whether 'PreserveSubFolders' is true or not. A warning will be printed in the terminal. I don't recommend having files with the same filename in the source directory. 
+
 # MIRC-specific instructions
 This was deveoped as an in house tool for the Laboratory of Imaging Genetics at KU Leuven. The following instructions are mostly relevant to those working on the MIRC infrastructure. 
 
 ## Working in PyCharm with conda
-The relevant conda environment (MeshEditingMicsd01) is installed on micsd01 at the time of writing. Or you can create your own with the required dependencies. Contact Dominique or the MIRC Wiki for up-to-date instructions for how to ccreate your own conda environmnet.
+The relevant conda environment (MeshEditingMicsd01) is installed on micsd01 at the time of writing. Or you can create your own with the required dependencies. Contact Dominique or the MIRC Wiki for up-to-date instructions for how to create your own conda environmnet.
 
 The simplest way to run the (e.g demo) scripts is to 
 1. Modify the scripts to process the meshes that you want to process (pay attention to the call to sys.path.append - see 'installation' above)
