@@ -9,7 +9,7 @@ from MeshEditor import MeshEditor
 
 # load a mesh
 obj = pv.read('/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/MeshEditor/demos/DemoData/DemoMeshSource/demoFace1.obj')
-
+obj.clean(inplace=True)
 # create and set up Mesh Editor object
 saveFileName ='/usr/local/micapollo01/MIC/DATA/STAFF/hmatth5/tmp/MeshEditor/demos/DemoData/DemoLandmarkDestination/demoFace1.txt' # what and where to save the output file
 ME = MeshEditor(obj,'landmark',saveFileName=saveFileName)
