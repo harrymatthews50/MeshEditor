@@ -1,10 +1,13 @@
 import os
 import glob
 from itertools import compress
+#from collections import counter
 import pyvista as pv
 from copy import deepcopy
 import numpy as np
 import csv
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import connected_components
 
 
 ######## Define Miscellaneous helper functions
@@ -14,6 +17,46 @@ def meshRadius(verts):
     v0 = verts - np.mean(verts, axis=0)
     N = np.sqrt(np.sum(v0 ** 2, axis=1))
     return np.median(N)  #
+
+
+def makeAdjacencyMatrix(polyData):
+    faces = np.reshape(polyData.faces, (int(len(polyData.faces) / 4), 4))
+    faces = faces[:, 1:]
+    edge1 = faces[:,(0,1)]
+    edge2 = faces[:,(1,2)]
+    edge3 = faces[:,(0,2)]
+    edges = np.concatenate((edge1,edge2,edge3),axis=0)
+    edges2 = np.concatenate((edges,edges),axis=0)
+    A = csr_matrix((np.ones(edges2.shape[0]).astype(int),(edges2[:,0],edges2[:,1])),shape=(polyData.n_points,polyData.n_points))
+    return A
+
+def labelConnectedComponents(polyData):
+    A = makeAdjacencyMatrix(polyData)
+    _,L = connected_components(A,directed=False)
+    return L
+
+def minMedEdgeLength(polyData):
+    verts = polyData.points
+    faces = np.reshape(polyData.faces, (int(len(polyData.faces) / 4), 4))
+    faces = faces[:,1:]
+    v0 = faces[:,0]
+    v1 = faces[:,1]
+    v2 = faces[:,2]
+    e0 = verts[v0,:]-verts[v1,:]
+    e1 = verts[v1,:]-verts[v2,:]
+    e2 = verts[v2,:]-verts[v0,:]
+    E = np.concatenate((e0,e1,e2),axis = 0)
+    N = np.linalg.norm(E,axis=1)
+    return np.min(N), np.median(N)
+def uniqueIndexes(l):
+    seen = set()
+    res = []
+    for i, n in enumerate(l):
+        if n not in seen:
+            res.append(i)
+            seen.add(n)
+    return res
+
 
 
 def makeFileDict(head, subpath, fn, ext):
@@ -63,11 +106,19 @@ def findFiles(sourcePath, filetype, destination, preserveSubFolders, mode):
     notHidden = [x[0] != '.' for x in tail]
     head = compress(head, notHidden)
     tail = compress(tail, notHidden)
-
+    head = [item for item in head]
+    tail = [item for item in tail]
     # parse tail into filename and extension
     parts = [os.path.splitext(x) for x in tail]
     fn, ext = list(zip(*parts))
 
+    # remove any non-unique filenames
+    unqInds = uniqueIndexes(fn)
+    if len(unqInds) != len(fn):
+        print('Duplicate file names found in source folder...will only process one')
+        fn = [fn[i] for i in range(len(fn)) if i in unqInds]
+        ext = [ext[i] for i in range(len(ext)) if i in unqInds]
+        head = [head[i] for i in range(len(head)) if i in unqInds]
     # getsub path if any
     subPath = [removeLeadingPathSeparator(x.replace(sourcePath, '')) for x in head]
     inFiles = [makeFileDict(sourcePath, subPath[x], fn[x], ext[x]) for x in range(len(fn))]
@@ -81,14 +132,20 @@ def createOutputFiles(inFiles, newPath, preserveSubFolders, mode):
     F = lambda x: x.update({'superPath': newPath})
     [F(x) for x in outFiles];
     if preserveSubFolders == False:  # remove path to subfolder from output files
-        F = lambda x: x.update({'subFolder': ''})
+        F = lambda x: x.update({'subPath': ''})
         [F(x) for x in outFiles]  # modify in situ
     if mode == 'landmark':  # foutput file will be text
         F = lambda x: x.update({'ext': '.txt'})
         [F(x) for x in outFiles]  # modify in situ
     elif mode == 'edit':  # output file will be obj
         F = lambda x: x.update({'ext': '.obj'})
-    [F(x) for x in outFiles]  # modify in situ
+        [F(x) for x in outFiles]  # modify in situ
+    elif mode == 'converttovtk':
+        F = lambda x: x.update({'ext': '.vtk'})
+        [F(x) for x in outFiles]  # modify in situ
+    else:
+        raise ValueError('Invalid mode')
+
     return outFiles
 
 
@@ -96,17 +153,15 @@ def writePolyDataToObj(polyData, fn):
     # basic obj exporter for pyvista polydata since obj is not supported yet in pyvista.save
     if os.path.splitext(fn)[1] != '.obj':
         raise ValueError('Filename does not have \'.obj\' extension')
-    verts = polyData.points.T
+    verts = polyData.points.astype(str)
+    verts = np.concatenate((np.tile('v',[verts.shape[0],1]), verts),axis=1)
     faces = np.reshape(polyData.faces, (int(len(polyData.faces) / 4), 4));
     faces = faces[:, 1:] + 1  # remove first column and add 1 to the index
+    faces = np.concatenate((np.tile('f', [faces.shape[0], 1]), faces.astype(str)), axis=1)
+
     with open(fn, 'w') as csvfile:
-        writerobj = csv.writer(csvfile, delimiter=' ')
-        for i in range(verts.shape[1]):
-            row = ['v'] + [str(item) for item in verts[:, i]]
-            writerobj.writerow(row)
-        for i in range(faces.shape[0]):
-            row = ['f'] + [str(item) for item in faces[i, :]]
-            writerobj.writerow(row)
+            writerobj = csv.writer(csvfile, delimiter=' ')
+            writerobj.writerows(np.concatenate((verts,faces),axis=0))
 
 
 def writeLandmarksToText(landmarks, fn):
@@ -115,13 +170,26 @@ def writeLandmarksToText(landmarks, fn):
         for i in range(len(landmarks)):
             row = [str(item) for item in landmarks[i]]
             writerobj.writerow(row)
+def removeExistingFiles(inFiles,outFiles):
+    notExisting = [fileExists(x) == False for x in outFiles]
+    inFiles = compress(inFiles, notExisting)
+    inFiles = [x for x in inFiles]
+    outFiles = compress(outFiles, notExisting)
+    outFiles = [x for x in outFiles]
+    return inFiles, outFiles
 
 
 def load3DImage(fileDict):
     fn = dictToPath(fileDict)
     try:
+        print('Loading '+fn)
         shp = pv.read(fn)
-        shp.triangulate(inplace=True)
+        shp.clean(inplace=True)
+        print('Finished Loading')
+        if shp.is_all_triangles == False:
+            print('Triangulating ' + fn)
+            shp.triangulate(inplace=True)
+            print('Finished Triangulating')
     except:
         print('Unable to load ' + fn)
         shp = None
@@ -131,7 +199,37 @@ def load3DImage(fileDict):
 
 
 class MeshEditor:
+    @property
+    def VertexRGB(self): # color of each node of the mesh in 'edit' mode
+        if (self.SelectedVertices is None) | (self.VerticesInRadius is None):
+            if self.mesh is None:
+                return None
+            else:
+                NP = self.mesh.n_points
+                out = np.ones([NP,3])*0.7*255
+                return out.astype('uint8')
+        else:
+            NP = self.mesh.n_points
+            out = np.ones([NP, 3]) * 0.7
+            out[self.SelectedVertices.astype('bool'),:] = [1,0,0]
+            out[self.VerticesInRadius.astype('bool'),:] = [0,1,1]
+            out = (out*255).astype('uint8')
+            return out
+
+
     def __init__(self, S, mode, landmark_size=4, showSelectionPreview=True, saveFileName=None):
+        # declare some proerties
+        self.SelectedVertices = np.zeros([S.n_points]).astype('bool')
+        self.VerticesInRadius = np.zeros([S.n_points]).astype('bool')
+        self._RecordDeletions=[]
+        self._MeshCopy = None
+
+
+
+
+
+
+
 
         ##### Define callbacks - all callbacks will have access to variables definied within this init function
         # such as 'P' the plotting window, 'S' the mesh being edited and 'previewMesh' a copy of S on which the selection preview is rendered
@@ -139,110 +237,140 @@ class MeshEditor:
 
         ### Brushing related callbacks for 'edit' mode
         def toggleBrushing():
-            # enable/disable brushing
-            if self.Brushing:
-                self.Brushing = False
-                P.background_color = [.7, .7, .7]
-            else:
-                self.Brushing = True
-                P.background_color = [.8, .8, .8];
+            if self.vertexSelectionModeActive:
+                # enable/disable brushing
+                if self.Brushing:
+                    self.Brushing = False
+                    self.plotter.background_color = [.8, .8, .8];
+                    self.plotter.update()
+                else:
+                    self.Brushing = True
+                    self.plotter.background_color = [.1, .7, .1]
+                    triggerSelectionUpdate()
+                    self.plotter.update()
+        def updatePointsInRadius(pos):
+            # given the current cursor position work out which points of the mesh are within the brush sphere
+            v0 = np.array(self.mesh.points - pos)
+            D = np.sqrt(np.sum(v0 ** 2, axis=1))
+            self.VerticesInRadius = D < self.brushRadius
+
 
         # these next 3 callbacks are attached to left, right or left double mouse clicks so will take the position of the click as an argument
         def enableSelecting(pos):
-            self.BrushSelectionType = 'Select'
-            toggleBrushing()
+            if self.vertexSelectionModeActive:
+                self.BrushSelectionType = 'Select'
+                toggleBrushing()
 
         def enableDeselecting(pos):
-            self.BrushSelectionType = 'Deselect'
-            toggleBrushing()
+            if self.vertexSelectionModeActive:
+                self.BrushSelectionType = 'Deselect'
+                toggleBrushing()
 
         def increaseBrushRadius():
-            currR = self.brushRadius
-            newR = currR + self.brushRadiusIncrement
-            self.brushRadius = newR
-           # print(newR)
+            if self.vertexSelectionModeActive:
+                currR = self.brushRadius
+                newR = currR + self.brushRadiusIncrement
+                self.brushRadius = newR
+                updateMeshVertexColors()
+               # print(newR)
             # updateCurrentSelection()
 
         def decreaseBrushRadius():
-            currR = self.brushRadius
-            newR = currR - self.brushRadiusIncrement
-            if newR < 0:
-                newR = 0
-            self.brushRadius = newR
+            if self.vertexSelectionModeActive:
+                currR = self.brushRadius
+                newR = currR - self.brushRadiusIncrement
+                if newR < self.minBrushSize:
+                    newR = self.minBrushSize
+                self.brushRadius = newR
+                updateMeshVertexColors()
           #  print(newR)
             # updateCurrentSelection()
 
-        def paintBucket(pos): # paint bucket selection, does not really work
-            if self.Brushing:
-                toggleBrushing() # turn off brushing
-            DS = S.connectivity() # get labels of connected components (does not seem to really work)
-            L = DS.point_data['RegionId']
+
+        def pickConnectedComponent(pos):
+            L = labelConnectedComponents(S)
             # find point to which it belongs
-            D = np.sqrt(np.sum((S.points - np.array(pos)) ** 2, axis=1))
+            D = np.sqrt(np.sum((self.mesh.points - np.array(pos)) ** 2, axis=1))
             posL = L[np.argmin(D)]
-            S.point_data['Vertex Selection'] = (L == posL).astype(float)
-            P.update()
+            return L==posL
+
+        def paintBucketAdd(pos): # paint bucket selection
+            if self.vertexSelectionModeActive:
+                if self.Brushing:
+                    toggleBrushing() # turn off brushing
+                newSelection = pickConnectedComponent(pos)
+                self.SelectedVertices = (newSelection | self.SelectedVertices).astype(bool)
+                updateMeshVertexColors()
+        def paintBucketRemove(pos):
+            if self.vertexSelectionModeActive:
+                if self.Brushing:
+                    toggleBrushing() # turn off brushing
+                newSelection = pickConnectedComponent(pos)
+                self.SelectedVertices = ((newSelection == False) & self.SelectedVertices).astype(bool)
+                updateMeshVertexColors()
 
         def addToSelection(pos):
             # add points within a given radius of mouse position (input to calllback) to the selection
-            psel = S.point_data['Vertex Selection']
-            v0 = np.array(S.points - pos)
-            D = np.sqrt(np.sum(v0 ** 2, axis=1))
-            newP = D < self.brushRadius
-            S.point_data['Vertex Selection'] = ((psel == 1) | (newP == 1)).astype(float)
-            P.update()
-
-
+            self.SelectedVertices = self.SelectedVertices | self.VerticesInRadius
         def removeFromSelection(pos):
-            # # remoive points within a given radius of mouse position (input to calllback) to the selection
-            psel = S.point_data['Vertex Selection']
-            v0 = np.array(S.points - pos)
-            D = np.sqrt(np.sum(v0 ** 2, axis=1))
-            newP = D < self.brushRadius
-            S.point_data['Vertex Selection'] = ((psel == 1) & (newP == 0)).astype(float)
-            P.update()
-
-        def mouseMoved(src, evt):
-            # this callback to mouse movement configures the whole brushing operation dependent on whether brushing is active and the current selection type
-            pos = P.pick_mouse_position()
-            if showSelectionPreview:
-                v0 = np.array(previewMesh.points) - pos
-                D = np.sqrt(np.sum(v0 ** 2, axis=1))
-                newP = D < self.brushRadius
-                previewMesh['Vertex Selection'] = newP
-                if self.Brushing == False:
-                    P.update()  # otherwise wait to update both meshes
-            if self.Brushing:
-                if self.BrushSelectionType == 'Select':
-                    addToSelection(pos)
-                elif self.BrushSelectionType == 'Deselect':
-                    removeFromSelection(pos)
+            self.SelectedVertices = self.SelectedVertices & (self.VerticesInRadius == False)
+        def updateMeshVertexColors():
+            self.mesh['Colors'] = self.VertexRGB
+            self.plotter.update()
+        def triggerSelectionUpdate(*args):
+            if self.vertexSelectionModeActive:
+                # update the selection of the vertices and the visualisation
+                pos = self.plotter.pick_mouse_position()
+                updatePointsInRadius(pos) # which points are now in the radius
+                if self.Brushing:
+                    if self.BrushSelectionType == 'Select':
+                        addToSelection(pos)
+                    elif self.BrushSelectionType == 'Deselect':
+                        removeFromSelection(pos)
+                updateMeshVertexColors()
         ########### End brushing callbacks
         ########### Vertex selection manipulation and deletion in 'edit' mode
         def invertVertexSelection():
-            S.point_data['Vertex Selection'] = S.point_data['Vertex Selection'] == 0
-            P.update()
+            self.SelectedVertices = self.SelectedVertices == False
+            updateMeshVertexColors()
 
         def deleteVertexSelection():
-            if showSelectionPreview:
-                previewMesh.point_data['Clipping Selection'] = S.point_data['Vertex Selection']
-                previewMesh.clip_scalar(inplace=True, value=.5)
-            S.clip_scalar(inplace=True, value=.5)
-            P.update()
+           # S["ClippingPoints"] = self.SelectedVertices;
+            self.mesh.remove_points(self.SelectedVertices.astype('bool'),inplace=True, keep_scalars=True)
+            self._RecordDeletions.append(self.SelectedVertices)
+            self.SelectedVertices = np.zeros(self.mesh.n_points).astype('bool')
+            self.VerticesInRadius = self.SelectedVertices
+            updateMeshVertexColors()
+            self.mesh.set_active_scalars("Colors")
+        def undoDeletion():
+            # remove current mesh actor
+            if len(self._RecordDeletions) > 0:
+                self.plotter.remove_actor(self.mesh_actor)
+                # make a new mesh from the copy
+                self.mesh = deepcopy(self._MeshCopy)
+                # remove last deletion from list
+                selection = self._RecordDeletions.pop(-1)
+                # apply deletions again in sequence except the last one
+                for i in range(len(self._RecordDeletions)):
+                    self.mesh.remove_points(self._RecordDeletions[i],inplace=True)
+                self.SelectedVertices = selection
+                self.VerticesInRadius = np.zeros_like(selection).astype('bool')
+                updateMeshVertexColors()
+                self.mesh_actor = self.plotter.add_mesh(self.mesh,pickable=True,scalars = "Colors",rgb=True)
+
+
+
+
 
         def deleteInverseVertexSelection():
             invertVertexSelection()
-            if showSelectionPreview:
-                previewMesh.point_data['Clipping Selection'] = S.point_data['Vertex Selection']
-                previewMesh.clip_scalar('Clipping Selection', inplace=True, value=.5)
-            S.clip_scalar(inplace=True, value=.5)
-            P.update()
+            deleteVertexSelection()
         ######### End vertex manipulation and deletion in edot mode
         ######### Callbacks for adding  and deleting landmarks
         def addLandmark(pos):
             if self.landmarkSelectionModeActive:
                 lm = pv.Sphere(center=pos, radius=self.landmarkSize)
-                actor = P.add_mesh(lm, color='r')
+                actor = self.plotter.add_mesh(lm, color='r')
                 self.landmarks.append(pos)
                 self.landmark_objects.append((lm, actor))
 
@@ -250,7 +378,7 @@ class MeshEditor:
             # remove from viewer
             if len(self.landmarks) > 0:
                 lm, actor = self.landmark_objects.pop(-1)
-                P.remove_actor(actor)
+                self.plotter.remove_actor(actor)
                 self.landmarks.pop(-1)
             # pass
         ##### End callbacks fro landmrking and deleting landmarks
@@ -259,38 +387,39 @@ class MeshEditor:
             # toggles between landmark selection s and interacting with the camera
             if self.landmarkSelectionModeActive:  # then disable
                 self.landmarkSelectionModeActive = False
-                P.renderer.enable()  # enable camera interaction
-                P.set_background([.9, .9, .9])
-                P.untrack_click_position(side='left')
+                self.plotter.renderer.enable()  # enable camera interaction
+                self.plotter.set_background([.9, .9, .9])
+                self.plotter.untrack_click_position(side='left')
             else:
                 self.landmarkSelectionModeActive = True
-                P.renderer.disable()
-                P.set_background([0.5, 0.5, 0.5])
-                P.track_click_position(callback=addLandmark, side='left')
+                self.plotter.renderer.disable()
+                self.plotter.set_background([0.5, 0.5, 0.5])
+                self.plotter.track_click_position(callback=addLandmark, side='left')
 
         def toggleVertexSelectionMode():
             if self.vertexSelectionModeActive:  # then disable
                 self.vertexSelectionModeActive = False
-                P.renderer.enable()  # enable camera interaction
-                P.untrack_click_position(side='right')
-                P.untrack_click_position(side='left')
-                P.set_background([.9, .9, .9])
-                P.untrack_mouse_position()
-                P.clear_events_for_key('i')
-                P.clear_events_for_key('1')
-                P.clear_events_for_key('2')
+                self.Brushing = False
+                # self.plotter.untrack_click_position(side='right')
+                # self.plotter.untrack_click_position(side='left')
+              #  self.plotter.untrack_mouse_position()
+                # self.plotter.clear_events_for_key('i')
+                # self.plotter.clear_events_for_key('1')
+                # self.plotter.clear_events_for_key('2')
+           #     self.plotter.iren.remove_observer("MouseMoveEvent")
+                self.plotter.update()
+                self.plotter.renderer.enable()  # enable camera interaction
+                self.plotter.set_background([.1, .2, .8])
             else:  # then enable
+                if self.Brushing:
+                    toggleBrushing()
                 self.vertexSelectionModeActive = True
-                P.renderer.disable()  # disable camera interaction
-                P.track_mouse_position()
-                P.iren.add_observer("MouseMoveEvent", mouseMoved)
-                P.add_key_event('i', invertVertexSelection)
-                P.add_key_event('2', increaseBrushRadius)
-                P.add_key_event('1', decreaseBrushRadius)
-                P.track_click_position(enableSelecting, side='left')
-                P.track_click_position(enableDeselecting, side='right')
-                P.track_click_position(paintBucket, side='left', double=True)
-                P.set_background([0.5, 0.5, 0.5])
+                self.plotter.renderer.disable()  # disable camera interaction
+                self.plotter.set_background([.7,.7,.7])
+                self.plotter.update()
+
+              #  self.plotter.track_mouse_position()
+
 
         def saveResult():
             # save the output depending on the mode
@@ -304,12 +433,12 @@ class MeshEditor:
                 print('Filename not specified...so file is not saved')
             if self.mode == 'edit':
                 writePolyDataToObj(S, fn)
-                P.background_color = [0, 0, 0]
-                P.update()
+                self.plotter.background_color = [0, 0, 0]
+                self.plotter.update()
             elif self.mode == 'landmark':
                 writeLandmarksToText(self.landmarks, fn)
-                P.background_color = [0, 0, 0]
-                P.update()
+                self.plotter.background_color = [0, 0, 0]
+                self.plotter.update()
             else:
                 raise ValueError('Invalid mode')
             print(fn+' saved')
@@ -328,35 +457,52 @@ class MeshEditor:
         P = pv.Plotter()
         self.plotter = P
         if mode.lower() == 'edit':
-            S.point_data['Vertex Selection'] = np.zeros(S.n_points)
-            self.brushRadius = np.array([meshRadius(S.points) / 2])  # default brush size
-            self.brushRadiusIncrement = np.array([meshRadius(S.points) / 20])
+            self.brushRadius = np.array([meshRadius(self.mesh.points) / 1.2])  # default brush size
+            minE,medE = minMedEdgeLength(S)
+            self.brushRadiusIncrement = np.array([meshRadius(self.mesh.points) / 20])
+            self.minBrushSize = minE/2
+            self.mesh["Colors"] = self.VertexRGB
+            self.plotter.add_key_event('t', toggleVertexSelectionMode)
+            self.plotter.add_key_event('i', invertVertexSelection)
+            self.plotter.add_key_event('Delete', deleteVertexSelection)
+            self.plotter.add_key_event('f', deleteInverseVertexSelection)
+            self.plotter.add_key_event('i', invertVertexSelection)
+            self.plotter.add_key_event('2', increaseBrushRadius)
+            self.plotter.add_key_event('1', decreaseBrushRadius)
+            self.plotter.add_key_event('z',undoDeletion)
+            self.plotter.track_click_position(enableSelecting, side='left')
+            self.plotter.track_click_position(enableDeselecting, side='right')
+            self.plotter.track_click_position(paintBucketAdd, side='left', double=True)
+            self.plotter.track_click_position(paintBucketRemove, side='right', double=True)
+            self.plotter.set_background([0.5, 0.5, 0.5])
+            self.plotter.track_mouse_position()
+            self.plotter.iren.add_observer("MouseMoveEvent", triggerSelectionUpdate)
+            actor = self.plotter.add_mesh(self.mesh, pickable=True, scalars="Colors",rgb=True)
+            self.mesh_actor = actor
+            self._MeshCopy = deepcopy(S);
+            self.vertexSelectionModeActive = True
+            self.plotter.renderer.disable()  # disable camera interaction
 
-            P.add_key_event('s', toggleVertexSelectionMode)
-            P.add_key_event('i', invertVertexSelection)
-            P.add_key_event('Delete', deleteVertexSelection)
-            P.add_key_event('f', deleteInverseVertexSelection)
-            # create extra mesh which will plot the vertex selection
-            if showSelectionPreview:
-                previewMesh = S.copy(deep=True)
-                previewMesh['Vertex Selection'] = np.zeros(S.n_points)
-                actor = P.add_mesh(previewMesh, style='points', pickable=True, point_size=.5)
-                self.previewMesh = (previewMesh, actor)
+
+        # create extra mesh which will plot the vertex selection
+            # if showSelectionPreview:
+            #     previewMesh = self.meshcopy(deep=True)
+            #     previewMesh['Vertex Selection'] = np.zeros(self.mesh.n_points)
+            #     actor = self.plotter.add_mesh(previewMesh, style='points', pickable=True, point_size=.5)
+            #     self.previewMesh = (previewMesh, actor)
 
         elif mode.lower() == 'landmark':
-            P.add_key_event('s', toggleLandmarkSelectionMode)
+            self.plotter.add_key_event('t', toggleLandmarkSelectionMode)
             self.landmarks = list()
             self.landmark_objects = list()
             toggleLandmarkSelectionMode()
-            P.add_key_event('Delete', deleteLastLandmark)
+            self.plotter.add_key_event('Delete', deleteLastLandmark)
+            self.plotter.add_mesh(S, pickable=True)
         else:
             raise ValueError('Invalid Mode')
 
-        P.add_key_event('Return', saveResult)
-
-        self.plotter.add_mesh(S, pickable=True, cmap='Wistia')
-        if mode == 'edit':
-            toggleVertexSelectionMode()
+        self.plotter.add_key_event('a', saveResult)
+        self.plotter.add_key_event('y',lambda: self.plotter.view_xz())
         self.plotter.view_xy()
         self.plotter.show()
 
@@ -370,6 +516,7 @@ class BatchMeshEditor:
         self._Mode = 'landmark'
         self.FileProcessingInfo = None
         self.PreLoadObjs = True
+        self.ConvertToVtk = False
         self.InputFileType = '.obj'
         self.PreserveSubFolders = True
         self.LandmarkSize = 4
@@ -451,16 +598,28 @@ class BatchMeshEditor:
         if self.SourcePath == self.DestinationPath:
             raise ValueError('Source and destination paths cannot be the same')
         # find files
-        [inFiles, outFiles] = findFiles(self.SourcePath, self.InputFileType, self.DestinationPath,
+
+        if self.ConvertToVtk:
+            # find files that don't have a vtk counterpart in the original directory
+            [inObj,outVtk] = findFiles(self.SourcePath,self.InputFileType,self.SourcePath,True,'converttovtk')
+            inObj,outVtk = removeExistingFiles(inObj,outVtk)
+            for i in range(len(inObj)):
+                print('Converting shape ' + str(i) +' of ' + str(len(inObj)))
+                shp,_ = load3DImage(inObj[i])
+                if shp is not None:
+                    shp.save(dictToPath(outVtk[i]),binary=True,texture = True)
+            inType = '.vtk' # moving forward the vtk files will be the input files
+        else:
+            inType=self.InputFileType
+
+        [inFiles, outFiles] = findFiles(self.SourcePath,inType, self.DestinationPath,
                                         self.PreserveSubFolders, self.Mode)
+
+
 
         # check if the output file exists
         if self.Overwrite == False:
-            notExisting = [fileExists(x) == False for x in outFiles]
-            inFiles = compress(inFiles, notExisting)
-            inFiles = [x for x in inFiles]
-            outFiles = compress(outFiles, notExisting)
-            outFiles = [x for x in outFiles]
+            inFiles,outFiles = removeExistingFiles(inFiles,outFiles)
         if self._Testing:
             inFiles = inFiles[0:5]
             outFiles = outFiles[0:5]
@@ -488,7 +647,7 @@ class BatchMeshEditor:
             fn = dictToPath(self._OutFiles[i])
             path, _ = os.path.split(fn)
             if os.path.isdir(path) == False:
-                os.mkdir(path)
+                os.makedirs(path)
             print('Processing image ' + str(i) + 'of ' + str(len(self._InFiles)))
             MeshEditor(mesh, self.Mode, landmark_size=self.LandmarkSize,
                             showSelectionPreview=self.ShowSelectionPreview, saveFileName=fn)
