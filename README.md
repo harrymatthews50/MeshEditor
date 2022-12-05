@@ -30,16 +30,27 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
 - Toggle between 'selection' and 'interaction' modes' by pressing 't'
     - In interaction mode mouse clicking and tracking modify the camera prespective
     - In selection mode brushing and vertex selection is controlled by mouse clicks
+#### Brush Selection
 - Select or deselect vertices using the brush
     - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a change in the background color)
     - Right clicking makes the brush deselect vertices
     - Left clicking makes the brush select vertices
     - Pressing keys '1' and '2' decrease and increase the radius of the brush respectively
+    - Vertices within the brush radius are colored cyan
+    - Selected vertices are colored red
+    - Unselected vertices are colored grey
+#### Geodesic Selection
+    - to enter geodesic selection mode double click or type 'g'
+    - this will highlight in forest green all vertices connected to the location of the mouse cursor
+    - the radius of the geodesic selection can be adjusted using 1 and 2 as for the brush selection
+    - left clicking adds the highlighted vertices to the selection and returns to brushing mode
+    - right clicking returns to brushing mode without modifying the selection
+#### Other controls
 - Pressing 'i' inverts the selection
 - 'Delete' deletes the selection
 - 'f' deletes the inverse of the selection
-- 'z' is an 'Undo' function. It will reverse the last deletion that was done. It can be pressed multiple tiomes to undo a series of deletions.
-- 'a' exports the mesh to .obj (if saveFileName='filename' was specified in the call to the constructor). the background turns black when saving is complete. The plotter can then be safely closed
+- 'z' is an 'Undo' function. It will reverse the last deletion that was done. It can be pressed multiple times to undo a series of deletions.
+- 'a' exports the mesh to .obj (if saveFileName='filename' was specified in the call to the MeshEditor constructor). the background turns black when saving is complete. The plotter can then be safely closed
 - 'q' closes the plotter
 #### Experimental (buggy) features
 - In both 'landmark' and 'edit' mode the program can simply crash with a C++ error. This does not seem to occur in a patterned way. 
