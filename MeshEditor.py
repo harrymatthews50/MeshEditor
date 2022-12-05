@@ -273,7 +273,10 @@ class MeshEditor:
             if self.VertexSelectionMode == 'Geodesic':
                     D = self.mesh["GeodesicDistances"]
             else:
-                pos = args[0]
+                if len(args)>0:
+                    pos = args[0]
+                else:
+                    pos = self.plotter.pick_mouse_position()
                 v0 = np.array(self.mesh.points - pos)
                 D = np.sqrt(np.sum(v0 ** 2, axis=1))
 
@@ -367,6 +370,8 @@ class MeshEditor:
                 updatePointsInRadius()
                 updateMeshVertexColors()
                 self.VertexSelectionMode = None
+                self.plotter.set_background(self.BackgroundColor)
+                self.plotter.update()
 
             #
 
@@ -376,7 +381,11 @@ class MeshEditor:
             elif self.VertexSelectionMode == 'Brushing':
                 toggleBrushing()
             elif self.VertexSelectionMode == 'Geodesic':
-                self.VertexSelectionMode is None
+                self.VertexSelectionMode = None
+                self.plotter.set_background(self.BackgroundColor)
+                self.plotter.update()
+                updatePointsInRadius()
+                updateMeshVertexColors()
 
         ########### End brushing callbacks
         ########### Vertex selection manipulation and deletion in 'edit' mode
