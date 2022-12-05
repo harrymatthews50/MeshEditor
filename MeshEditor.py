@@ -7,7 +7,7 @@ from copy import deepcopy
 import numpy as np
 import csv
 from scipy.sparse import csr_matrix
-from scipy.sparse.csgraph import connected_components
+from scipy.sparse.csgraph import connected_components,dijkstra
 
 
 ######## Define Miscellaneous helper functions
@@ -212,9 +212,30 @@ class MeshEditor:
             NP = self.mesh.n_points
             out = np.ones([NP, 3]) * 0.7
             out[self.SelectedVertices.astype('bool'),:] = [1,0,0]
-            out[self.VerticesInRadius.astype('bool'),:] = [0,1,1]
+            if (self.VertexSelectionMode=='Brushing') | (self.VertexSelectionMode is None):
+                col = [0,1,1]
+            elif self.VertexSelectionMode=='Geodesic':
+                col = [.1, .5, .1]
+            out[self.VerticesInRadius.astype('bool'),:] = col
             out = (out*255).astype('uint8')
             return out
+
+    @property
+    def BackgroundColor(self):
+        if self.mode=='edit':
+            if self.vertexSelectionModeActive ==  False:
+                return [0,0,1.]
+            else:
+                if self.VertexSelectionMode == 'Geodesic':
+                    return [0,.7,.7]
+                elif self.VertexSelectionMode == 'Brushing':
+                    return [0,.7,.7]
+                elif self.VertexSelectionMode is None:
+                    return [.7,.7,.7]
+
+        else:
+            return [.7,.7,.7]
+
 
 
     def __init__(self, S, mode, landmark_size=4, showSelectionPreview=True, saveFileName=None):
@@ -239,29 +260,33 @@ class MeshEditor:
         def toggleBrushing():
             if self.vertexSelectionModeActive:
                 # enable/disable brushing
-                if self.Brushing:
-                    self.Brushing = False
-                    self.plotter.background_color = [.8, .8, .8];
-                    self.plotter.update()
+                if self.VertexSelectionMode == 'Brushing':
+                    self.VertexSelectionMode = None
                 else:
-                    self.Brushing = True
-                    self.plotter.background_color = [.1, .7, .1]
+                    self.VertexSelectionMode = 'Brushing'
+
                     triggerSelectionUpdate()
-                    self.plotter.update()
-        def updatePointsInRadius(pos):
+                self.plotter.set_background(self.BackgroundColor)
+                self.plotter.update()
+        def updatePointsInRadius(*args):
             # given the current cursor position work out which points of the mesh are within the brush sphere
-            v0 = np.array(self.mesh.points - pos)
-            D = np.sqrt(np.sum(v0 ** 2, axis=1))
+            if self.VertexSelectionMode == 'Geodesic':
+                    D = self.mesh["GeodesicDistances"]
+            else:
+                pos = args[0]
+                v0 = np.array(self.mesh.points - pos)
+                D = np.sqrt(np.sum(v0 ** 2, axis=1))
+
             self.VerticesInRadius = D < self.brushRadius
 
 
         # these next 3 callbacks are attached to left, right or left double mouse clicks so will take the position of the click as an argument
-        def enableSelecting(pos):
+        def enableSelecting(*args):
             if self.vertexSelectionModeActive:
                 self.BrushSelectionType = 'Select'
                 toggleBrushing()
 
-        def enableDeselecting(pos):
+        def enableDeselecting(*args):
             if self.vertexSelectionModeActive:
                 self.BrushSelectionType = 'Deselect'
                 toggleBrushing()
@@ -272,8 +297,8 @@ class MeshEditor:
                 newR = currR + self.brushRadiusIncrement
                 self.brushRadius = newR
                 updateMeshVertexColors()
-               # print(newR)
-            # updateCurrentSelection()
+                updatePointsInRadius()
+                updateMeshVertexColors()
 
         def decreaseBrushRadius():
             if self.vertexSelectionModeActive:
@@ -282,37 +307,39 @@ class MeshEditor:
                 if newR < self.minBrushSize:
                     newR = self.minBrushSize
                 self.brushRadius = newR
+                updatePointsInRadius()
                 updateMeshVertexColors()
           #  print(newR)
             # updateCurrentSelection()
 
 
-        def pickConnectedComponent(pos):
-            L = labelConnectedComponents(S)
-            # find point to which it belongs
-            D = np.sqrt(np.sum((self.mesh.points - np.array(pos)) ** 2, axis=1))
-            posL = L[np.argmin(D)]
-            return L==posL
+        # def pickConnectedComponent(pos):
+        #     L = labelConnectedComponents(S)
+        #     # find point to which it belongs
+        #     D = np.sqrt(np.sum((self.mesh.points - np.array(pos)) ** 2, axis=1))
+        #     posL = L[np.argmin(D)]
+           # return L==posL
 
-        def paintBucketAdd(pos): # paint bucket selection
-            if self.vertexSelectionModeActive:
-                if self.Brushing:
-                    toggleBrushing() # turn off brushing
-                newSelection = pickConnectedComponent(pos)
-                self.SelectedVertices = (newSelection | self.SelectedVertices).astype(bool)
-                updateMeshVertexColors()
-        def paintBucketRemove(pos):
-            if self.vertexSelectionModeActive:
-                if self.Brushing:
-                    toggleBrushing() # turn off brushing
-                newSelection = pickConnectedComponent(pos)
-                self.SelectedVertices = ((newSelection == False) & self.SelectedVertices).astype(bool)
-                updateMeshVertexColors()
+        # def EnterPaintBucketMode(pos): # paint bucket selection
+        #     if self.vertexSelectionModeActive:
+        #         if self.VertexSelectionMode == 'Brushing':
+        #             toggleBrushing() # turn off brushing
+        #         newSelection = pickConnectedComponent(pos)
+        #
+        #         self.SelectedVertices = (newSelection | self.SelectedVertices).astype(bool)
+        #         updateMeshVertexColors()
+        # # def paintBucketRemove(pos):
+        #     if self.vertexSelectionModeActive:
+        #         if self.VertexSelectionM:
+        #             toggleBrushing() # turn off brushing
+        #         newSelection = pickConnectedComponent(pos)
+        #         self.SelectedVertices = ((newSelection == False) & self.SelectedVertices).astype(bool)
+        #         updateMeshVertexColors()
 
-        def addToSelection(pos):
+        def addToSelection(*args):
             # add points within a given radius of mouse position (input to calllback) to the selection
             self.SelectedVertices = self.SelectedVertices | self.VerticesInRadius
-        def removeFromSelection(pos):
+        def removeFromSelection(*args):
             self.SelectedVertices = self.SelectedVertices & (self.VerticesInRadius == False)
         def updateMeshVertexColors():
             self.mesh['Colors'] = self.VertexRGB
@@ -322,12 +349,35 @@ class MeshEditor:
                 # update the selection of the vertices and the visualisation
                 pos = self.plotter.pick_mouse_position()
                 updatePointsInRadius(pos) # which points are now in the radius
-                if self.Brushing:
+                if self.VertexSelectionMode == 'Brushing':
                     if self.BrushSelectionType == 'Select':
-                        addToSelection(pos)
+                        addToSelection()
                     elif self.BrushSelectionType == 'Deselect':
-                        removeFromSelection(pos)
+                        removeFromSelection()
                 updateMeshVertexColors()
+        def leftClick(*args):
+            if self.VertexSelectionMode is None:
+                enableSelecting() # enable selection and brushing
+            elif self.VertexSelectionMode == 'Brushing':
+                toggleBrushing() # turn off brishing if it is on
+            elif self.VertexSelectionMode == 'Geodesic':
+                addToSelection()
+                # reset the brush radius to a comparaple size
+                self.brushRadius = meshRadius(self.mesh.points[self.VerticesInRadius,:])
+                updatePointsInRadius()
+                updateMeshVertexColors()
+                self.VertexSelectionMode = None
+
+            #
+
+        def rightClick(*args):
+            if self.VertexSelectionMode is None:
+                enableDeselecting()
+            elif self.VertexSelectionMode == 'Brushing':
+                toggleBrushing()
+            elif self.VertexSelectionMode == 'Geodesic':
+                self.VertexSelectionMode is None
+
         ########### End brushing callbacks
         ########### Vertex selection manipulation and deletion in 'edit' mode
         def invertVertexSelection():
@@ -388,18 +438,18 @@ class MeshEditor:
             if self.landmarkSelectionModeActive:  # then disable
                 self.landmarkSelectionModeActive = False
                 self.plotter.renderer.enable()  # enable camera interaction
-                self.plotter.set_background([.9, .9, .9])
+                self.plotter.set_background(self.BackgroundColor)
                 self.plotter.untrack_click_position(side='left')
             else:
                 self.landmarkSelectionModeActive = True
                 self.plotter.renderer.disable()
-                self.plotter.set_background([0.5, 0.5, 0.5])
+                self.plotter.set_background(self.BackgroundColor)
                 self.plotter.track_click_position(callback=addLandmark, side='left')
 
         def toggleVertexSelectionMode():
             if self.vertexSelectionModeActive:  # then disable
                 self.vertexSelectionModeActive = False
-                self.Brushing = False
+                self.VertexSelectionMode= None
                 # self.plotter.untrack_click_position(side='right')
                 # self.plotter.untrack_click_position(side='left')
               #  self.plotter.untrack_mouse_position()
@@ -409,18 +459,36 @@ class MeshEditor:
            #     self.plotter.iren.remove_observer("MouseMoveEvent")
                 self.plotter.update()
                 self.plotter.renderer.enable()  # enable camera interaction
-                self.plotter.set_background([.1, .2, .8])
+                self.plotter.set_background(self.BackgroundColor)
             else:  # then enable
-                if self.Brushing:
-                    toggleBrushing()
+                if self.VertexSelectionMode is not None:
+                    self.VertexSelectionMode is None
                 self.vertexSelectionModeActive = True
                 self.plotter.renderer.disable()  # disable camera interaction
-                self.plotter.set_background([.7,.7,.7])
+                self.plotter.set_background(self.BackgroundColor)
                 self.plotter.update()
 
               #  self.plotter.track_mouse_position()
 
+        def enterGeodesicSelection(*args):
+            pos = self.plotter.pick_mouse_position();
+            self.VertexSelectionMode = 'Geodesic'
+            A= makeAdjacencyMatrix(self.mesh)
+            #self.mesh["ConnectedComponents"] = labelConnectedComponents(self.mesh)
+            v0 = self.mesh.points-pos
+            D = np.linalg.norm(v0,axis=1)
+            I = np.argmin(D)
+            GD = dijkstra(A,directed=False,indices=I)
+            self.mesh["GeodesicDistances"] = GD
+            self.mesh.set_active_scalars("Colors")
+            self.brushRadius = np.max(GD[GD != np.Inf]) # select the whole connected component
+            updatePointsInRadius(pos)
+            updateMeshVertexColors()
 
+        def mouseMoved(*args):
+            if self.VertexSelectionMode != 'Geodesic': # geodesic is too expensive to update on the fly
+                pos = self.plotter.pick_mouse_position()
+                triggerSelectionUpdate(pos)
         def saveResult():
             # save the output depending on the mode
             fn = self.SaveFileName
@@ -451,7 +519,7 @@ class MeshEditor:
         self.mesh = S
         self.vertexSelectionModeActive = False
         self.landmarkSelectionModeActive = False
-        self.Brushing = False
+        self.VertexSelectionMode = None
         self.mode = mode.lower()
         # create pyvista plotter
         P = pv.Plotter()
@@ -470,13 +538,15 @@ class MeshEditor:
             self.plotter.add_key_event('2', increaseBrushRadius)
             self.plotter.add_key_event('1', decreaseBrushRadius)
             self.plotter.add_key_event('z',undoDeletion)
-            self.plotter.track_click_position(enableSelecting, side='left')
-            self.plotter.track_click_position(enableDeselecting, side='right')
-            self.plotter.track_click_position(paintBucketAdd, side='left', double=True)
-            self.plotter.track_click_position(paintBucketRemove, side='right', double=True)
+            self.plotter.add_key_event('g', enterGeodesicSelection)
+            self.plotter.track_click_position(leftClick, side='left')
+            self.plotter.track_click_position(rightClick, side='right')
+            self.plotter.track_click_position(enterGeodesicSelection, side='left', double=True)
+
+           # self.plotter.track_click_position(paintBucketRemove, side='right', double=True)
             self.plotter.set_background([0.5, 0.5, 0.5])
             self.plotter.track_mouse_position()
-            self.plotter.iren.add_observer("MouseMoveEvent", triggerSelectionUpdate)
+            self.plotter.iren.add_observer("MouseMoveEvent", mouseMoved)
             actor = self.plotter.add_mesh(self.mesh, pickable=True, scalars="Colors",rgb=True)
             self.mesh_actor = actor
             self._MeshCopy = deepcopy(S);
