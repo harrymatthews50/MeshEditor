@@ -41,11 +41,11 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - Unselected vertices are colored grey
 #### Geodesic Selection
 Geodesic selection selects vertices within a given geodesic distance of the picked point
-    - to enter geodesic selection mode double click or type 'g'
-    - this will highlight in forest green all vertices connected to the location of the mouse cursor
-    - the radius of the geodesic selection can be adjusted using 1 and 2 as for the brush selection
-    - left clicking adds the highlighted vertices to the selection and returns to brushing mode
-    - right clicking returns to brushing mode without modifying the selection
+- to enter geodesic selection mode double click or type 'g'
+- this will highlight in forest green all vertices connected to the location of the mouse cursor
+- the radius of the geodesic selection can be adjusted using 1 and 2 as for the brush selection
+- left clicking adds the highlighted vertices to the selection and returns to brushing mode
+- right clicking returns to brushing mode without modifying the selection
 #### Other controls
 - Pressing 'i' inverts the selection
 - 'Delete' deletes the selection
