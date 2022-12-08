@@ -509,7 +509,7 @@ class MeshEditor:
             else:
                 print('Filename not specified...so file is not saved')
             if self.mode == 'edit':
-                writePolyDataToObj(S, fn)
+                writePolyDataToObj(self.mesh, fn)
                 self.plotter.background_color = [0, 0, 0]
                 self.plotter.update()
             elif self.mode == 'landmark':
