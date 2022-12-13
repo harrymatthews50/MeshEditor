@@ -10,27 +10,25 @@ Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033
 ### Creating the conda environment from scratch
 1. Install anaconda or miniconda (https://docs.anaconda.com/anaconda/install/index.html)
 2. Create a new conda environment with python 3.10. In your computer command prompt or terminal type
-'''
+```
 conda create --name MeshEditing python=3.10
-'''
+```
 3. Install pyvista and scipy by typing in your terminal
-'''
+```
 conda activate MeshEditing
 conda install -c conda-forge pyvista
 conda install -c anaconda scipy
-'''
+```
 After installing the dependencies the MeshEditor module can be imported within a script after calls to
 ```
 import sys
 sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor repo on your computer
 ```
 To verify the installation take one of the demo scripts, modify the call to sys.path.append at the start of the script then try to run it from your computer terminal
-
-'''
+```
 conda activate MeshEditing
 python path/to/demo/script.py
-'''
-
+```
 ## Overview
 ### MeshEditor module
 The MeshEditor module implements two classes:
