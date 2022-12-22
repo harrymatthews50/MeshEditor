@@ -553,7 +553,7 @@ class MeshEditor:
             self.plotter.add_key_event('g', enterGeodesicSelection)
             self.plotter.track_click_position(leftClick, side='left')
             self.plotter.track_click_position(rightClick, side='right')
-            self.plotter.track_click_position(enterGeodesicSelection, side='left', double=True)
+      #      self.plotter.track_click_position(enterGeodesicSelection, side='left', double=True)
 
            # self.plotter.track_click_position(paintBucketRemove, side='right', double=True)
             self.plotter.set_background([0.5, 0.5, 0.5])

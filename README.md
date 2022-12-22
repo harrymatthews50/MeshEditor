@@ -9,11 +9,11 @@ Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033
 ## Installation
 ### Creating the conda environment from scratch
 1. Install anaconda or miniconda (https://docs.anaconda.com/anaconda/install/index.html)
-2. Create a new conda environment with python 3.10. In your computer command prompt or terminal type
+2. Create a new conda environment with python 3.10. In your anaconda prompt (Windows) or computer terminal (Mac/Linux)
 ```
 conda create --name MeshEditing python=3.10
 ```
-3. Install pyvista and scipy by typing in your terminal
+3. Install pyvista and scipy by typing in your terminal/Anaconda prompt
 ```
 conda activate MeshEditing
 conda install -c conda-forge pyvista
@@ -24,7 +24,7 @@ After installing the dependencies the MeshEditor module can be imported within a
 import sys
 sys.path.append('/path/to/mesh/editor') # path to the location of the Mesheditor repo on your computer
 ```
-To verify the installation take one of the demo scripts, modify the call to sys.path.append at the start of the script then try to run it from your computer terminal
+To verify the installation take one of the demo scripts, modify the call to sys.path.append at the start of the text of the script in a plain text editor or Python IDE then try to run it from your computer terminal or Anaconda Prompt (Windows)
 ```
 conda activate MeshEditing
 python path/to/demo/script.py
@@ -58,7 +58,7 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - Unselected vertices are colored grey
 #### Geodesic Selection
 Geodesic selection selects vertices within a given geodesic distance of the picked point
-- to enter geodesic selection mode double click or type 'g'
+- to enter geodesic selection mode type 'g'
 - this will highlight in forest green all vertices connected to the location of the mouse cursor
 - the radius of the geodesic selection can be adjusted using 1 and 2 as for the brush selection
 - left clicking adds the highlighted vertices to the selection and returns to brushing mode
