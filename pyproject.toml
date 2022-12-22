@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "MeshEditor"
-version = "0.1"
+version = "0.4"
 authors = [
   { name="Harold Matthews", email="harrymatthews50@gmail.com" },
 ]
@@ -17,6 +17,10 @@ classifiers = [
 ]
 [tool.setuptools]
 package-dir = {"" = "src"}
+[tool.setuptools.dynamic]
+dependencies = { file= "requirements.txt"}
+
 [project.urls]
 "Homepage" = "https://github.com/harrymatthews50/MeshEditor"
+
 
