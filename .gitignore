@@ -1,5 +1,7 @@
 .*
 !/.gitignore
 __*
+!src/MeshEditor/__init__.py
 demos/DemoData/*Destination/*.obj
 demos/DemoData/*Destination/*.txt
+src/MeshEditor.egg-info/*

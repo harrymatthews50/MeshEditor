@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "MeshEditor"
+version = "0.1"
+authors = [
+  { name="Harold Matthews", email="harrymatthews50@gmail.com" },
+]
+description = "A package for editing and landmarking meshes"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+[tool.setuptools]
+package-dir = {"" = "src"}
+[project.urls]
+"Homepage" = "https://github.com/harrymatthews50/MeshEditor"
+
