@@ -184,6 +184,9 @@ def load3DImage(fileDict):
     try:
         print('Loading '+fn)
         shp = pv.read(fn)
+        if shp.n_points==0:
+            print('Mesh '+fn + 'is empty')
+            raise ValueError()
         shp.clean(inplace=True)
         print('Finished Loading')
         if shp.is_all_triangles == False:
@@ -345,8 +348,8 @@ class MeshEditor:
         def removeFromSelection(*args):
             self.SelectedVertices = self.SelectedVertices & (self.VerticesInRadius == False)
         def updateMeshVertexColors():
-            self.mesh['Colors'] = self.VertexRGB
-            self.plotter.update()
+            self.plotter.update_scalars(self.VertexRGB, mesh=self.mesh)
+
         def triggerSelectionUpdate(*args):
             if self.vertexSelectionModeActive:
                 # update the selection of the vertices and the visualisation
