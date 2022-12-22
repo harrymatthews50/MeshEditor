@@ -9,6 +9,6 @@ setup(
     author_email = 'harrymatthews50@gmail.com',
     url = 'https://github.com/harrymatthews50/MeshEditor/',
     download_url = 'https://github.com/harrymatthews50/MeshEditor/archive/refs/tags/v0.1.tar.gz',
-    keywords = ['Mesh Cleaning',,
+    keywords = ['Mesh Cleaning'],
     classifiers = [],
 )
