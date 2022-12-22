@@ -1,7 +1,7 @@
 # MeshEditor
 A tool for editing and landmarking 3D meshes, written using pyvista.
 ## Note
-Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033) that stops closing of pyvista plotters, this will not work on Mac. It has been tested on Linux 
+Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033) that stops closing of pyvista plotters, there may be trouble on Mac OS. It seems to work on the latest MacOS (Ventura, at the time of writing) but not earlier.
 ## Dependencies
 - Python 3.10
 - pyvista 0.37 and its dependencies
