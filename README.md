@@ -100,19 +100,19 @@ If there are multiple files with tthe same filename in the source path (e.g. in 
 This was deveoped as an in house tool for the Laboratory of Imaging Genetics at KU Leuven. The following instructions are mostly relevant to those working on the MIRC infrastructure. 
 
 ## Working in PyCharm with conda
-The relevant conda environment (MeshEditingMicsd01) is installed on micsd01 at the time of writing. Or you can create your own with the required dependencies. Contact Dominique or the MIRC Wiki for up-to-date instructions for how to create your own conda environmnet.
+The relevant conda environment (MeshEditing) is installed on micsd01 at the time of writing. Or you can create your own with the required dependencies. Contact Dominique or the MIRC Wiki for up-to-date instructions for how to create your own conda environment.
 
 The simplest way to run the (e.g demo) scripts is to 
-1. Modify the scripts to process the meshes that you want to process (pay attention to the call to sys.path.append - see 'installation' above)
+1. Modify the scripts to process the meshes that you want to process 
 2. In the terminal run:
 ```
-conda activate MeshEditingMicsd01
+conda activate MeshEditing
 python scriptName.py # change to the full or relative path to the script you are trying to run
 ```
 Those who are more used to MATLAB might prefer work in an interactive IDE. With PyCharm it is very easy to set python interpreters per project and will give you excellent debugging features so I recommend that. You will first need to make a new pycharm project configured with the correct python interpreter. This interpreter only needs to correspond to a conda environment in which the relevant dependencies are installed and could be 'MeshEditing' or one you create yourself. To create a new project correctly configured. It is easiest if you first activate the conda environment and then start pycharm:
 1. Start pycharm by typing in ther terminal
  ``` 
- conda activate MeshEditingMicsd01
+ conda activate MeshEditing
  pycharm
  ```
 
