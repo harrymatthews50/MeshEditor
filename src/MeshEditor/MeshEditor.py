@@ -514,11 +514,11 @@ class MeshEditor:
             if self.mode == 'edit':
                 writePolyDataToObj(self.mesh, fn)
                 self.plotter.background_color = [0, 0, 0]
-                self.plotter.update()
+                #self.plotter.update()
             elif self.mode == 'landmark':
                 writeLandmarksToText(self.landmarks, fn)
                 self.plotter.background_color = [0, 0, 0]
-                self.plotter.update()
+               # self.plotter.update()
             else:
                 raise ValueError('Invalid mode')
             print(fn+' saved')
