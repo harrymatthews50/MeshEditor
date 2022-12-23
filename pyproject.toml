@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "MeshEditor"
-version = "0.4"
+version = "0.6.1"
 authors = [
   { name="Harold Matthews", email="harrymatthews50@gmail.com" },
 ]
@@ -15,10 +15,16 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  'pyvista >= 0.37',
+  'scipy>= 1.3',
+]
+
+
 [tool.setuptools]
 package-dir = {"" = "src"}
-[tool.setuptools.dynamic]
-dependencies = { file= "requirements.txt"}
+
+
 
 [project.urls]
 "Homepage" = "https://github.com/harrymatthews50/MeshEditor"
