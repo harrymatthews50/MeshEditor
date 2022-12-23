@@ -274,7 +274,7 @@ class MeshEditor:
         def updatePointsInRadius(*args):
             # given the current cursor position work out which points of the mesh are within the brush sphere
             if self.VertexSelectionMode == 'Geodesic':
-                    D = self.mesh["GeodesicDistances"]
+                    D = self.geodesicDistances
             else:
                 if len(args)>0:
                     pos = args[0]
@@ -315,32 +315,8 @@ class MeshEditor:
                 self.brushRadius = newR
                 updatePointsInRadius()
                 updateMeshVertexColors()
-          #  print(newR)
-            # updateCurrentSelection()
+  
 
-
-        # def pickConnectedComponent(pos):
-        #     L = labelConnectedComponents(S)
-        #     # find point to which it belongs
-        #     D = np.sqrt(np.sum((self.mesh.points - np.array(pos)) ** 2, axis=1))
-        #     posL = L[np.argmin(D)]
-           # return L==posL
-
-        # def EnterPaintBucketMode(pos): # paint bucket selection
-        #     if self.vertexSelectionModeActive:
-        #         if self.VertexSelectionMode == 'Brushing':
-        #             toggleBrushing() # turn off brushing
-        #         newSelection = pickConnectedComponent(pos)
-        #
-        #         self.SelectedVertices = (newSelection | self.SelectedVertices).astype(bool)
-        #         updateMeshVertexColors()
-        # # def paintBucketRemove(pos):
-        #     if self.vertexSelectionModeActive:
-        #         if self.VertexSelectionM:
-        #             toggleBrushing() # turn off brushing
-        #         newSelection = pickConnectedComponent(pos)
-        #         self.SelectedVertices = ((newSelection == False) & self.SelectedVertices).astype(bool)
-        #         updateMeshVertexColors()
 
         def addToSelection(*args):
             # add points within a given radius of mouse position (input to calllback) to the selection
@@ -361,6 +337,7 @@ class MeshEditor:
                     elif self.BrushSelectionType == 'Deselect':
                         removeFromSelection()
                 updateMeshVertexColors()
+        
         def leftClick(*args):
             if self.VertexSelectionMode is None:
                 enableSelecting() # enable selection and brushing
@@ -404,6 +381,7 @@ class MeshEditor:
             self.VerticesInRadius = self.SelectedVertices
             updateMeshVertexColors()
             self.mesh.set_active_scalars("Colors")
+        
         def undoDeletion():
             # remove current mesh actor
             if len(self._RecordDeletions) > 0:
@@ -491,7 +469,7 @@ class MeshEditor:
             D = np.linalg.norm(v0,axis=1)
             I = np.argmin(D)
             GD = dijkstra(A,directed=False,indices=I)
-            self.mesh["GeodesicDistances"] = GD
+            self.geodesicDistances = GD
             self.mesh.set_active_scalars("Colors")
             self.brushRadius = np.max(GD[GD != np.Inf]) # select the whole connected component
             updatePointsInRadius(pos)

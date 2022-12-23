@@ -16,9 +16,9 @@ conda create --name MeshEditing python=3.10
 3. Install MeshEditor by typing in the terminal/Anaconda prompt
 ```
 conda activate MeshEditing
+conda install pip
 pip install MeshEditor
-pip install pyvista
-pip install scipy
+
 ```
 Try to run a demo script
 
