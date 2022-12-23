@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "MeshEditor"
-version = "0.6.1"
+version = "0.6.2"
 authors = [
   { name="Harold Matthews", email="harrymatthews50@gmail.com" },
 ]
