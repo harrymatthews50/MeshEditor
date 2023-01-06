@@ -84,7 +84,7 @@ Various attributes of the BatchMeshEditor object need to be set inside of the sc
 - 'Overwrite' if False only the files in the SourcePath without a match in the DestinationPath will be processed - this is recommended since, if the program crashes you can simply restart where you left off
 - 'PreLoadObjs' if True all files will be loaded prior to processing, otherwise they will be loaded on the fly - this is not recommended since preloading takes a long time and the program will sometimes crash mid way through you do not want to have to run the preloading again every time
 - 'Mode'corresponds to 'mode' of the MeshEditor and controls whetehr to landmark or edit the scans
-- 'Convert to vtk' if true this will make a copy of each input file in the cource directory saved in 'vtk' format for faster loading. This overides 'InputFileType' ... during processing the '.vtk' files will be loaded. 
+- 'ConvertToVtk' if true this will make a copy of each input file in the cource directory saved in 'vtk' format for faster loading. This overides 'InputFileType' ... during processing the '.vtk' files will be loaded. 
 
 Two methods of the Batch Mesheditor need to be run in sequence 'prepareFiles' (finds the files and preloads them if necessary) 'processFiles' strats the process of iterating through the files. For each file:
 1. The MeshEditor will open
