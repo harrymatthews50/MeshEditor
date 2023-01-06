@@ -165,7 +165,7 @@ def writePolyDataToObj(polyData, fn):
 
 
 def writeLandmarksToText(landmarks, fn):
-    with open(fn, 'w') as csvfile:
+    with open(fn, 'w',newline='') as csvfile:
         writerobj = csv.writer(csvfile, delimiter=',')
         for i in range(len(landmarks)):
             row = [str(item) for item in landmarks[i]]
