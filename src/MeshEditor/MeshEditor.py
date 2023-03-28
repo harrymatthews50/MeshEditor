@@ -524,7 +524,6 @@ class MeshEditor:
             self.plotter.add_key_event('i', invertVertexSelection)
             self.plotter.add_key_event('Delete', deleteVertexSelection)
             self.plotter.add_key_event('f', deleteInverseVertexSelection)
-            self.plotter.add_key_event('i', invertVertexSelection)
             self.plotter.add_key_event('2', increaseBrushRadius)
             self.plotter.add_key_event('1', decreaseBrushRadius)
             self.plotter.add_key_event('z',undoDeletion)
