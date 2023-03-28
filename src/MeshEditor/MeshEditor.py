@@ -324,6 +324,7 @@ class MeshEditor:
         def removeFromSelection(*args):
             self.SelectedVertices = self.SelectedVertices & (self.VerticesInRadius == False)
         def updateMeshVertexColors():
+            self.mesh.set_active_scalars("Colors")
             self.plotter.update_scalars(self.VertexRGB, mesh=self.mesh)
 
         def triggerSelectionUpdate(*args):
@@ -380,7 +381,7 @@ class MeshEditor:
             self.SelectedVertices = np.zeros(self.mesh.n_points).astype('bool')
             self.VerticesInRadius = self.SelectedVertices
             updateMeshVertexColors()
-            self.mesh.set_active_scalars("Colors")
+
         
         def undoDeletion():
             # remove current mesh actor
