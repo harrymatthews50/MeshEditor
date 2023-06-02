@@ -28,18 +28,19 @@ Try to run a demo script
 conda activate MeshEditing
 python path/to/demo/script.py
 ```
-## Overview
-### MeshEditor module
-The MeshEditor module implements two classes:
-- MeshEditor enables vertex selection, deletion and basic landmarking of a 3D mesh. It allows saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
-- BatchMeshEditor enables batch processing of multiple files. Handkes loading files from a source directory and outputting them into a destination directory after editing or landmarking.
 ### Demos
 Check the demos folder for:
 - demo_MeshEditorEditMode.py which runs the MeshEditor in 'edit' mode (see below for explanation of the controls)
 - demo_MeshEditorLandmarkMode.py which runs the MeshEditor in 'landmark' mode (see below for explanation of the controls)
 - demo_BatchMeshEditor.py which runs the BatchMeshEditor to process multiple scans in sequence.
 
-To run the demos make sure you modify the call to sys.path.append at the beginning of the script (see installation above)
+## Overview
+### MeshEditor module
+The MeshEditor module implements two classes:
+- MeshEditor enables vertex selection, deletion and basic landmarking of a 3D mesh. It allows saving the resulting mesh or landmark coordinates. Essentially it adds a bunch of callbacks in response to key and mouse events to a pyvista plotter. 
+- BatchMeshEditor enables batch processing of multiple files. Handkes loading files from a source directory and outputting them into a destination directory after editing or landmarking.
+
+
 ## Using the Mesh Editor
 The different modes are 'edit' and 'landmark' and are specified by the second positional argument to the MeshEditor constructor
 ### MeshEditor controls - 'edit' mode
