@@ -60,6 +60,9 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - Selected vertices are colored red
     - Unselected vertices are colored grey
 #### Geodesic Selection
+
+<img src="./img/Geodesic_Selection.gif" width="40%">
+
 Geodesic selection selects vertices within a given geodesic distance of the picked point
 - to enter geodesic selection mode type 'g'
 - this will highlight in forest green all vertices connected to the location of the mouse cursor
@@ -76,6 +79,9 @@ Geodesic selection selects vertices within a given geodesic distance of the pick
 #### Experimental (buggy) features
 - In both 'landmark' and 'edit' mode the program can simply crash with a C++ error. This does not seem to occur in a patterned way. 
 ### MeshEditor controls - 'landmark' mode
+
+<img src="./img/Recording_Landmark_mode.gif" width="40%"> 
+
 - Toggle between 'selection' and 'interaction' modes' by pressing 't'
     - in interaction mode mouse clicking and tracking modify the camera prespective
     - in selection mode left clicking puts a landmark in the position of the click
