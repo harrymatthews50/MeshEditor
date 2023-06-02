@@ -47,7 +47,9 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - In interaction mode mouse clicking and tracking modify the camera prespective
     - In selection mode brushing and vertex selection is controlled by mouse clicks
 #### Brush Selection
+
 <img src="./img/Recording_Edit_Mode.gif" width="40%">
+
 - Select or deselect vertices using the brush
     - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a change in the background color)
     - Right clicking makes the brush deselect vertices
