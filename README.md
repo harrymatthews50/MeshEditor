@@ -1,7 +1,7 @@
 # MeshEditor
 A tool for editing and landmarking 3D meshes, written using pyvista.
 
-<img src="./img/Recording_Landmark_mode.gif" width="50%"> <img src="./img/Recording_Edit_Mode.gif" width="50%">
+<img src="./img/Recording_Landmark_mode.gif" width="40%"> <img src="./img/Recording_Edit_Mode.gif" width="40%">
 
 ## Note
 Due to a longstanding bug in vtk (https://github.com/pyvista/pyvista/issues/1033) that stops closing of pyvista plotters, there may be trouble on Mac OS. It seems to work on the latest MacOS (Ventura, at the time of writing) but not earlier.
@@ -47,6 +47,7 @@ The different modes are 'edit' and 'landmark' and are specified by the second po
     - In interaction mode mouse clicking and tracking modify the camera prespective
     - In selection mode brushing and vertex selection is controlled by mouse clicks
 #### Brush Selection
+<img src="./img/Recording_Edit_Mode.gif" width="40%">
 - Select or deselect vertices using the brush
     - Right or left clicking toggles between modifying the selection and not modifying the selection (this is indicated visually by a change in the background color)
     - Right clicking makes the brush deselect vertices
